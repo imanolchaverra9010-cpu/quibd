@@ -98,7 +98,7 @@ const EventosPage = () => {
                 transition={{ delay: 0.1 }}
                 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground mt-2"
               >
-                Eventos y <span className="text-gradient-gold">Noticias</span>
+                Eventos y <span className="text-gradient-gold">Noticias Imanol</span>
               </motion.h1>
             </div>
           </section>
