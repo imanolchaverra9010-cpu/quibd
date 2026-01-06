@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { heroAPI, eventInfoAPI } from '@/services/api';
 
 // --- INTERFACES ---
 export interface Event {
@@ -46,7 +47,6 @@ interface AdminContextType {
 const STORAGE_KEY = 'mmq_admin_state';
 const AUTH_KEY = 'mmq_admin_auth';
 const ADMIN_PASSWORD = 'mmq2025admin';
-const BACKEND_URL = 'http://localhost:5000/api/event-info';
 
 const defaultState: AdminState = {
   events: [
@@ -83,30 +83,24 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const fetchFromBackend = async () => {
       try {
         // Fetch event info
-        const eventInfoResponse = await fetch(BACKEND_URL);
-        if (eventInfoResponse.ok) {
-          const eventData = await eventInfoResponse.json();
-          if (eventData.status === "success" && eventData.eventDate) {
-            setState(prev => ({
-              ...prev,
-              eventDate: eventData.eventDate
-            }));
-            console.log("¡Fecha sincronizada desde MySQL, parche!", eventData.eventDate);
-          }
+        const eventData = await eventInfoAPI.get();
+        if (eventData.status === "success" && eventData.eventDate) {
+          setState(prev => ({
+            ...prev,
+            eventDate: eventData.eventDate
+          }));
+          console.log("¡Fecha sincronizada desde MySQL, parche!", eventData.eventDate);
         }
 
         // Fetch hero settings (video)
-        const heroResponse = await fetch('http://localhost:5000/api/hero-settings');
-        if (heroResponse.ok) {
-          const heroData = await heroResponse.json();
-          if (heroData.status === "success" && heroData.settings) {
-            setState(prev => ({
-              ...prev,
-              heroVideo: heroData.settings.heroVideo || '',
-              eventDate: heroData.settings.eventDate || prev.eventDate
-            }));
-            console.log("¡Video del hero sincronizado desde MySQL!", heroData.settings.heroVideo);
-          }
+        const heroData = await heroAPI.getSettings();
+        if (heroData.status === "success" && heroData.settings) {
+          setState(prev => ({
+            ...prev,
+            heroVideo: heroData.settings.heroVideo || '',
+            eventDate: heroData.settings.eventDate || prev.eventDate
+          }));
+          console.log("¡Video del hero sincronizado desde MySQL!", heroData.settings.heroVideo);
         }
       } catch (error) {
         console.error("No se pudo conectar con el backend de Python. Usando datos locales.", error);
