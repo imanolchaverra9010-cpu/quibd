@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom"; // Asegúrate de tener esto
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Palmtree, Fish, Bird, Mountain, Waves, Music } from "lucide-react";
 import tourismChoco from "@/assets/tourism-choco.jpg";
@@ -36,8 +36,8 @@ export function TourismSection() {
               Turismo en <span className="text-gradient-emerald">Quibdó</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              Aprovecha tu visita a la Media Maratón para explorar la riqueza natural y cultural del Chocó.
-              Conocido como una de las regiones más biodiversas del planeta, el Chocó te ofrece experiencias
+              Aprovecha tu visita a la Media Maratón para explorar la riqueza natural y cultural del Chocó. 
+              Conocido como una de las regiones más biodiversas del planeta, el Chocó te ofrece experiencias 
               únicas que van desde la selva tropical hasta las tradiciones afrocolombianas.
             </p>
 
@@ -58,12 +58,9 @@ export function TourismSection() {
               ))}
             </div>
 
-            {/* AQUÍ ESTÁ EL CAMBIO: Envolvemos el Button en un Link */}
-            <Link to="/Turismo">
-              <Button variant="outline" size="lg" className="hover:bg-primary hover:text-white transition-all">
-                Explorar Turismo
-              </Button>
-            </Link>
+            <Button variant="outline" size="lg">
+              Explorar Turismo
+            </Button>
           </motion.div>
 
           <motion.div

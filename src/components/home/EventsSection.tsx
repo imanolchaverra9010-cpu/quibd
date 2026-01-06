@@ -1,12 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight, Clock, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import eventsBg from "@/assets/events-bg.jpg";
-import { useEffect } from "react";
-import { eventsAPI } from "@/services/api";
 
 interface Event {
   id: number;
@@ -66,57 +63,9 @@ const events: Event[] = [
     image: eventsBg,
   },
 ];
-const renderFormattedText = (text: string) => {
-  if (!text) return null;
-  const parts = text.split(/(\*\*.*?\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    return part;
-  });
-};
 
 export function EventsSection() {
-  // 2. Definimos los estados para los eventos y carga
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const navigate = useNavigate();
-
-  // 3. Efecto para cargar los datos al montar el componente
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const data = await eventsAPI.getAll();
-        if (data.status === "success") {
-          // El backend usa 'description' pero tu interfaz usa 'content' y 'excerpt'
-          // Mapeamos los datos para que encajen
-          const mappedEvents = data.events.map((e: any) => ({
-            id: e.id,
-            title: e.title,
-            date: e.date,
-            time: "", // El backend actual no tiene campo 'time', podrías añadirlo después
-            location: "Quibdó", // Valor por defecto o añadir al backend
-            category: e.category,
-            excerpt: e.description.substring(0, 100) + "...",
-            content: e.description,
-            image: e.image || eventsBg, // Usa la del backend o la de respaldo
-          }));
-          setEvents(mappedEvents);
-        }
-      } catch (error) {
-        console.error("Error cargando eventos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadEvents();
-  }, []);
-
-  if (loading) return <div className="text-center py-20">Cargando eventos para el parche...</div>;
-
 
   return (
     <section className="py-24 bg-background relative overflow-hidden">
@@ -142,7 +91,7 @@ export function EventsSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {events.slice(0, 2).map((event, index) => (
+          {events.map((event, index) => (
             <motion.article
               key={event.id}
               initial={{ opacity: 0, y: 30 }}
@@ -159,10 +108,11 @@ export function EventsSection() {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-                <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold uppercase ${event.category === "evento"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-                  }`}>
+                <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold uppercase ${
+                  event.category === "evento" 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-secondary text-secondary-foreground"
+                }`}>
                   {event.category}
                 </span>
               </div>
@@ -204,7 +154,7 @@ export function EventsSection() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button variant="outline" size="lg" onClick={() => navigate("/eventos")}>
+          <Button variant="outline" size="lg">
             Ver Todos los Eventos
           </Button>
         </motion.div>
@@ -222,10 +172,11 @@ export function EventsSection() {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
-                <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold uppercase ${selectedEvent.category === "evento"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground"
-                  }`}>
+                <span className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold uppercase ${
+                  selectedEvent.category === "evento" 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-secondary text-secondary-foreground"
+                }`}>
                   {selectedEvent.category}
                 </span>
               </div>
@@ -250,8 +201,8 @@ export function EventsSection() {
                   </span>
                 </div>
               </DialogHeader>
-              <DialogDescription className="text-foreground/80 leading-relaxed text-base whitespace-pre-wrap">
-                {renderFormattedText(selectedEvent.content)}
+              <DialogDescription className="text-foreground/80 leading-relaxed text-base">
+                {selectedEvent.content}
               </DialogDescription>
               <div className="flex gap-3 pt-4">
                 {selectedEvent.category === "evento" && (

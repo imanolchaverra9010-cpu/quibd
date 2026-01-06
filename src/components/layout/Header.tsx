@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // Eliminamos User que ya no se usa
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import logoMMQ from "@/assets/logo-mmq.png";
 
 const navLinks = [
   { name: "Inicio", path: "/" },
   { name: "Quiénes Somos", path: "/quienes-somos" },
   { name: "Eventos", path: "/eventos" },
+  { name: "Resultados", path: "/resultados" },
   { name: "Galería", path: "/galeria" },
+  { name: "Ruta", path: "/ruta" },
 ];
 
 export function Header() {
@@ -36,11 +36,15 @@ export function Header() {
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <img
-            src={logoMMQ}
-            alt="Media Maratón de Quibdó"
-            className="h-12 w-auto group-hover:scale-110 transition-transform duration-300"
-          />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-emerald-glow flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <span className="font-display text-xl text-primary-foreground">MMQ</span>
+          </div>
+          <div className="hidden sm:block">
+            <h1 className="font-display text-xl text-foreground leading-tight">
+              Media Maratón
+            </h1>
+            <p className="text-xs text-muted-foreground -mt-1">de Quibdó</p>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
@@ -61,8 +65,7 @@ export function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-3">
-          <ThemeToggle />
-          <Link to="https://respira.run/media-maraton-quibdo">
+          <Link to="/inscribete">
             <Button variant="gold" size="default">
               Inscríbete
             </Button>
@@ -101,14 +104,14 @@ export function Header() {
                   {link.name}
                 </Link>
               ))}
-
-              {/* Sección de acciones en móvil */}
-              <div className="flex flex-col gap-4 mt-4 pt-4 border-t border-border">
-                <div className="flex items-center justify-between px-4">
-                  <span className="text-sm font-medium text-muted-foreground">Modo oscuro</span>
-                  <ThemeToggle />
-                </div>
-                <Link to="https://respira.run/media-maraton-quibdo" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
+                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full gap-2">
+                    <User className="w-4 h-4" />
+                    Ingresar
+                  </Button>
+                </Link>
+                <Link to="/inscribete" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="gold" className="w-full">
                     Inscríbete
                   </Button>

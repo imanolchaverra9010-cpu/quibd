@@ -1,81 +1,63 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Helmet } from "react-helmet-async";
-import { galleryAPI } from "@/services/api";
-import { toast } from "sonner";
+
+// Import gallery images
+import startLine from "@/assets/gallery/start-line.jpg";
+import aerialRace from "@/assets/gallery/aerial-race.jpg";
+import hydration from "@/assets/gallery/hydration.jpg";
+import finishMedals from "@/assets/gallery/finish-medals.jpg";
+import warmup from "@/assets/gallery/warmup.jpg";
+import aboutHero from "@/assets/about-hero.jpg";
+import resultsBg from "@/assets/results-bg.jpg";
+import eventsBg from "@/assets/events-bg.jpg";
 
 interface GalleryImage {
-  id: string;
+  id: number;
   src: string;
-  alt: string;
+  title: string;
   event: string;
   year: number;
-  type: 'image' | 'video';
 }
 
+const galleryImages: GalleryImage[] = [
+  { id: 1, src: startLine, title: "Salida de la carrera", event: "Media Maratón 2024", year: 2024 },
+  { id: 2, src: aerialRace, title: "Vista aérea del recorrido", event: "Media Maratón 2024", year: 2024 },
+  { id: 3, src: hydration, title: "Punto de hidratación", event: "Media Maratón 2024", year: 2024 },
+  { id: 4, src: finishMedals, title: "Celebración en la meta", event: "Media Maratón 2024", year: 2024 },
+  { id: 5, src: warmup, title: "Calentamiento previo", event: "Media Maratón 2023", year: 2023 },
+  { id: 6, src: aboutHero, title: "Panorámica de corredores", event: "Media Maratón 2023", year: 2023 },
+  { id: 7, src: resultsBg, title: "Cruzando la meta", event: "Media Maratón 2022", year: 2022 },
+  { id: 8, src: eventsBg, title: "Corredores en acción", event: "Media Maratón 2022", year: 2022 },
+];
+
+const events = ["Todos", "Media Maratón 2024", "Media Maratón 2023", "Media Maratón 2022"];
+
 const GaleriaPage = () => {
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState("Todos");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Obtener eventos únicos para el filtro
-  const events = ["Todos", ...Array.from(new Set(galleryImages.map(img => img.event)))];
-
-  // Cargar galería desde el backend
-  useEffect(() => {
-    loadGallery();
-  }, []);
-
-  const loadGallery = async () => {
-    try {
-      setLoading(true);
-      const response = await galleryAPI.getAll();
-      setGalleryImages(response.items);
-    } catch (error) {
-      toast.error("Error al cargar la galería");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredImages = selectedEvent === "Todos"
-    ? galleryImages
+  const filteredImages = selectedEvent === "Todos" 
+    ? galleryImages 
     : galleryImages.filter(img => img.event === selectedEvent);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
-
+  
   const nextImage = () => {
     if (lightboxIndex !== null) {
       setLightboxIndex((lightboxIndex + 1) % filteredImages.length);
     }
   };
-
+  
   const prevImage = () => {
     if (lightboxIndex !== null) {
       setLightboxIndex((lightboxIndex - 1 + filteredImages.length) % filteredImages.length);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main className="pt-24 flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Cargando galería...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <>
@@ -115,10 +97,11 @@ const GaleriaPage = () => {
                   <button
                     key={event}
                     onClick={() => setSelectedEvent(event)}
-                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${selectedEvent === event
+                    className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                      selectedEvent === event
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"
-                      }`}
+                    }`}
                   >
                     {event}
                   </button>
@@ -130,52 +113,37 @@ const GaleriaPage = () => {
           {/* Gallery Grid */}
           <section className="py-12">
             <div className="container mx-auto px-4">
-              {filteredImages.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">No hay elementos en la galería</p>
-                </div>
-              ) : (
-                <motion.div
-                  layout
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {filteredImages.map((image, index) => (
-                      <motion.div
-                        key={image.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3 }}
-                        onClick={() => openLightbox(index)}
-                        className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer"
-                      >
-                        {image.type === 'image' ? (
-                          <img
-                            src={image.src}
-                            alt={image.alt}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                        ) : (
-                          <video
-                            src={image.src}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            muted
-                            loop
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="absolute bottom-4 left-4 right-4">
-                            <h3 className="text-foreground font-semibold">{image.alt}</h3>
-                            <p className="text-sm text-muted-foreground">{image.event}</p>
-                          </div>
+              <motion.div 
+                layout
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              >
+                <AnimatePresence mode="popLayout">
+                  {filteredImages.map((image, index) => (
+                    <motion.div
+                      key={image.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3 }}
+                      onClick={() => openLightbox(index)}
+                      className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer"
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <h3 className="text-foreground font-semibold">{image.title}</h3>
+                          <p className="text-sm text-muted-foreground">{image.event}</p>
                         </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
-              )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
             </div>
           </section>
         </main>
@@ -197,7 +165,7 @@ const GaleriaPage = () => {
               >
                 <X className="w-8 h-8" />
               </button>
-
+              
               <button
                 onClick={(e) => { e.stopPropagation(); prevImage(); }}
                 className="absolute left-4 p-2 text-foreground hover:text-primary transition-colors"
@@ -205,30 +173,16 @@ const GaleriaPage = () => {
                 <ChevronLeft className="w-10 h-10" />
               </button>
 
-              {filteredImages[lightboxIndex].type === 'image' ? (
-                <motion.img
-                  key={lightboxIndex}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  src={filteredImages[lightboxIndex].src}
-                  alt={filteredImages[lightboxIndex].alt}
-                  className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <motion.video
-                  key={lightboxIndex}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  src={filteredImages[lightboxIndex].src}
-                  className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-                  onClick={(e) => e.stopPropagation()}
-                  controls
-                  autoPlay
-                />
-              )}
+              <motion.img
+                key={lightboxIndex}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                src={filteredImages[lightboxIndex].src}
+                alt={filteredImages[lightboxIndex].title}
+                className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+                onClick={(e) => e.stopPropagation()}
+              />
 
               <button
                 onClick={(e) => { e.stopPropagation(); nextImage(); }}
@@ -238,7 +192,7 @@ const GaleriaPage = () => {
               </button>
 
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
-                <h3 className="text-foreground font-display text-xl">{filteredImages[lightboxIndex].alt}</h3>
+                <h3 className="text-foreground font-display text-xl">{filteredImages[lightboxIndex].title}</h3>
                 <p className="text-muted-foreground">{filteredImages[lightboxIndex].event}</p>
               </div>
             </motion.div>

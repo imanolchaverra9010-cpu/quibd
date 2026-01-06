@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Youtube, Mail, MapPin, Phone } from "lucide-react";
-import logoMMQ from "@/assets/logo-mmq.png";
 
 export function Footer() {
   return (
@@ -10,11 +9,13 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img 
-                src={logoMMQ} 
-                alt="Media Maratón de Quibdó" 
-                className="h-12 w-auto"
-              />
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-emerald-glow flex items-center justify-center">
+                <span className="font-display text-xl text-primary-foreground">MMQ</span>
+              </div>
+              <div>
+                <h3 className="font-display text-xl text-foreground">Media Maratón</h3>
+                <p className="text-xs text-muted-foreground">de Quibdó</p>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Evento deportivo urbano que busca cultivar la paz y el bienestar en la comunidad, 

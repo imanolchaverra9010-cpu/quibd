@@ -55,7 +55,7 @@ const QuienesSomosPage = () => {
                   ¿Quiénes <span className="text-gradient-emerald">Somos?</span>
                 </h1>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  La Media Maratón de Quibdó es más que una carrera: es un movimiento que une a la comunidad del Chocó
+                  La Media Maratón de Quibdó es más que una carrera: es un movimiento que une a la comunidad del Chocó 
                   en torno al deporte, la paz y el bienestar colectivo.
                 </p>
               </motion.div>
@@ -77,8 +77,8 @@ const QuienesSomosPage = () => {
                   </div>
                   <h2 className="font-display text-3xl text-foreground mb-4">Nuestra Misión</h2>
                   <p className="text-muted-foreground leading-relaxed">
-                    Promover estilos de vida saludables y activos en la comunidad chocoana, utilizando el deporte
-                    como herramienta de transformación social, paz y desarrollo regional, contribuyendo al bienestar
+                    Promover estilos de vida saludables y activos en la comunidad chocoana, utilizando el deporte 
+                    como herramienta de transformación social, paz y desarrollo regional, contribuyendo al bienestar 
                     físico y mental de los participantes.
                   </p>
                 </motion.div>
@@ -93,8 +93,8 @@ const QuienesSomosPage = () => {
                   </div>
                   <h2 className="font-display text-3xl text-foreground mb-4">Nuestra Visión</h2>
                   <p className="text-muted-foreground leading-relaxed">
-                    Ser reconocidos como el evento deportivo más importante del Pacífico colombiano, modelo de
-                    organización, inclusión y sostenibilidad, posicionando a Quibdó como destino de turismo
+                    Ser reconocidos como el evento deportivo más importante del Pacífico colombiano, modelo de 
+                    organización, inclusión y sostenibilidad, posicionando a Quibdó como destino de turismo 
                     deportivo a nivel nacional e internacional.
                   </p>
                 </motion.div>
@@ -177,7 +177,7 @@ const QuienesSomosPage = () => {
             </div>
           </section>
 
-          {/* Team 
+          {/* Team */}
           <section className="py-20">
             <div className="container mx-auto px-4">
               <motion.div
@@ -213,7 +213,7 @@ const QuienesSomosPage = () => {
                 ))}
               </div>
             </div>
-          </section>*/}
+          </section>
         </main>
         <Footer />
       </div>

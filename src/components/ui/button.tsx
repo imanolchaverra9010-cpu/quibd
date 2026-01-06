@@ -9,17 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-primary-foreground hover:opacity-90 hover:shadow-lg hover:shadow-primary/30",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border-2 border-primary/50 bg-transparent text-foreground hover:bg-primary/10 hover:border-primary",
-        secondary: "bg-gradient-to-r from-secondary to-emerald-glow text-secondary-foreground hover:opacity-90 hover:shadow-lg hover:shadow-secondary/30",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-lg hover:shadow-secondary/30",
         ghost: "hover:bg-muted hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-primary text-primary-foreground font-bold uppercase tracking-wider hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transform",
+        hero: "bg-gradient-to-r from-primary to-emerald-glow text-primary-foreground font-bold uppercase tracking-wider hover:shadow-xl hover:shadow-primary/40 hover:scale-105 transform",
         heroOutline: "border-2 border-foreground/30 bg-transparent text-foreground hover:bg-foreground/10 hover:border-foreground/60 backdrop-blur-sm",
-        gold: "bg-gradient-accent text-accent-foreground font-bold uppercase tracking-wider hover:shadow-xl hover:shadow-accent/40 hover:scale-105 transform",
-        accent: "bg-gradient-accent text-accent-foreground hover:opacity-90 hover:shadow-lg hover:shadow-accent/30",
-        purple: "bg-gradient-purple text-purple-light-foreground font-bold uppercase tracking-wider hover:shadow-xl hover:shadow-purple-light/40 hover:scale-105 transform",
+        gold: "bg-gradient-to-r from-secondary to-gold-glow text-secondary-foreground font-bold uppercase tracking-wider hover:shadow-xl hover:shadow-secondary/40 hover:scale-105 transform",
+        accent: "bg-accent text-accent-foreground hover:bg-accent/90 hover:shadow-lg hover:shadow-accent/30",
       },
       size: {
         default: "h-10 px-4 py-2",
