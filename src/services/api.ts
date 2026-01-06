@@ -1,5 +1,5 @@
 const isProd = import.meta.env.PROD;
-const API_BASE_URL = isProd ? '/api' : 'http://localhost:5000/api';
+const API_BASE_URL = isProd ? '/api' : '/api';
 
 // Utilidad centralizada para manejar respuestas y errores
 const handleResponse = async (response: Response) => {
@@ -108,4 +108,5 @@ export const adminAPI = {
 
 export const statsAPI = {
   get: () => fetch(`${API_BASE_URL}/stats`).then(handleResponse),
+
 };
