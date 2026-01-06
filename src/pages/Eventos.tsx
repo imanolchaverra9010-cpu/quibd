@@ -19,6 +19,17 @@ interface Event {
   featured: boolean;
 }
 
+const renderFormattedText = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 const EventosPage = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,8 +112,8 @@ const EventosPage = () => {
                     key={f}
                     onClick={() => setFilter(f)}
                     className={`px-6 py-2 rounded-full text-sm font-medium capitalize transition-all ${filter === f
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}
                   >
                     {f === "todos" ? "Todos" : f === "evento" ? "Eventos" : "Noticias"}
@@ -146,14 +157,14 @@ const EventosPage = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
                         <div className="absolute top-4 left-4 flex gap-2">
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${event.featured
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
                             }`}>
                             {event.featured ? "Destacado" : event.category}
                           </span>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${event.category === "evento"
-                              ? "bg-secondary text-secondary-foreground"
-                              : "bg-accent text-accent-foreground"
+                            ? "bg-secondary text-secondary-foreground"
+                            : "bg-accent text-accent-foreground"
                             }`}>
                             {event.category}
                           </span>
@@ -169,8 +180,8 @@ const EventosPage = () => {
                         <h3 className="font-display text-xl text-foreground mb-2 group-hover:text-primary transition-colors">
                           {event.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                          {event.description}
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 whitespace-pre-wrap">
+                          {renderFormattedText(event.description)}
                         </p>
                         <div className="flex items-center gap-2 text-primary text-sm font-medium">
                           Ver detalles
@@ -208,14 +219,14 @@ const EventosPage = () => {
                 <DialogHeader>
                   <div className="flex gap-2 mb-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${selectedEvent.featured
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
                       }`}>
                       {selectedEvent.featured ? "Destacado" : selectedEvent.category}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${selectedEvent.category === "evento"
-                        ? "bg-secondary text-secondary-foreground"
-                        : "bg-accent text-accent-foreground"
+                      ? "bg-secondary text-secondary-foreground"
+                      : "bg-accent text-accent-foreground"
                       }`}>
                       {selectedEvent.category}
                     </span>
@@ -230,8 +241,8 @@ const EventosPage = () => {
                     </span>
                   </div>
                 </DialogHeader>
-                <DialogDescription className="text-foreground/80 leading-relaxed text-base">
-                  {selectedEvent.description}
+                <DialogDescription className="text-foreground/80 leading-relaxed text-base whitespace-pre-wrap">
+                  {renderFormattedText(selectedEvent.description)}
                 </DialogDescription>
                 <div className="flex gap-3 pt-4">
                   {selectedEvent.category === "evento" && selectedEvent.featured && (
