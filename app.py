@@ -165,11 +165,231 @@ def get_events():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+@app.route('/api/events', methods=['POST'])
+def create_event():
+    try:
+        title = request.form.get('title')
+        date = request.form.get('date')
+        description = request.form.get('description')
+        category = request.form.get('category', 'evento')
+        featured = request.form.get('featured') == 'true'
+        
+        image_url = None
+        if 'file' in request.files:
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"{timestamp}_{filename}"
+                save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'events')
+                if not os.path.exists(save_path): os.makedirs(save_path)
+                file.save(os.path.join(save_path, filename))
+                image_url = f"/uploads/events/{filename}"
+        
+        new_event = Event(
+            title=title,
+            date=date,
+            description=description,
+            category=category,
+            featured=featured,
+            image=image_url
+        )
+        db.session.add(new_event)
+        db.session.commit()
+        return jsonify({'status': 'success', 'event': new_event.to_dict()}), 201
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/events/<int:event_id>', methods=['PUT'])
+def update_event(event_id):
+    try:
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({'status': 'error', 'message': 'Event not found'}), 404
+            
+        event.title = request.form.get('title', event.title)
+        event.date = request.form.get('date', event.date)
+        event.description = request.form.get('description', event.description)
+        event.category = request.form.get('category', event.category)
+        event.featured = request.form.get('featured') == 'true'
+        
+        if 'file' in request.files:
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"{timestamp}_{filename}"
+                save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'events')
+                if not os.path.exists(save_path): os.makedirs(save_path)
+                file.save(os.path.join(save_path, filename))
+                event.image = f"/uploads/events/{filename}"
+                
+        db.session.commit()
+        return jsonify({'status': 'success', 'event': event.to_dict()})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/events/<int:event_id>', methods=['DELETE'])
+def delete_event(event_id):
+    try:
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({'status': 'error', 'message': 'Event not found'}), 404
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Event deleted'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 @app.route('/api/gallery', methods=['GET'])
 def get_gallery():
     try:
         items = GalleryItem.query.order_by(GalleryItem.created_at.desc()).all()
         return jsonify({'status': 'success', 'items': [i.to_dict() for i in items]})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/gallery', methods=['POST'])
+def create_gallery_item():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No file sent'}), 400
+        
+        file = request.files['file']
+        event_id = request.form.get('event_id')
+        year = request.form.get('year')
+        item_type = request.form.get('type', 'image')
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gallery')
+            if not os.path.exists(save_path): os.makedirs(save_path)
+            file.save(os.path.join(save_path, filename))
+            
+            new_item = GalleryItem(
+                src=f"/uploads/gallery/{filename}",
+                alt=filename,
+                event_id=event_id,
+                year=year,
+                type=item_type
+            )
+            db.session.add(new_item)
+            db.session.commit()
+            return jsonify({'status': 'success', 'item': new_item.to_dict()}), 201
+        return jsonify({'status': 'error', 'message': 'Invalid file type'}), 400
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/gallery/bulk', methods=['POST'])
+def create_gallery_bulk():
+    try:
+        files = request.files.getlist('files[]')
+        event_id = request.form.get('event_id')
+        year = request.form.get('year')
+        item_type = request.form.get('type', 'image')
+        
+        success_count = 0
+        failed = []
+        
+        for file in files:
+            if file and allowed_file(file.filename):
+                try:
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"{timestamp}_{filename}"
+                    save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'gallery')
+                    if not os.path.exists(save_path): os.makedirs(save_path)
+                    file.save(os.path.join(save_path, filename))
+                    
+                    new_item = GalleryItem(
+                        src=f"/uploads/gallery/{filename}",
+                        alt=filename,
+                        event_id=event_id,
+                        year=int(year),
+                        type=item_type
+                    )
+                    db.session.add(new_item)
+                    success_count += 1
+                except Exception as e:
+                    failed.append({'filename': file.filename, 'error': str(e)})
+            else:
+                failed.append({'filename': file.filename, 'error': 'Invalid file type'})
+        
+        db.session.commit()
+        return jsonify({
+            'status': 'success',
+            'success_count': success_count,
+            'failed_count': len(failed),
+            'failed': failed
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/gallery/<int:item_id>', methods=['DELETE'])
+def delete_gallery_item(item_id):
+    try:
+        item = GalleryItem.query.get(item_id)
+        if not item:
+            return jsonify({'status': 'error', 'message': 'Item not found'}), 404
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Item deleted'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/sponsors', methods=['GET'])
+def get_sponsors():
+    try:
+        sponsors = Sponsor.query.order_by(Sponsor.tier.asc()).all()
+        return jsonify({'status': 'success', 'sponsors': [s.to_dict() for s in sponsors]})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/sponsors', methods=['POST'])
+def create_sponsor():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No logo sent'}), 400
+        
+        file = request.files['file']
+        name = request.form.get('name')
+        tier = request.form.get('tier')
+        
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'sponsors')
+            if not os.path.exists(save_path): os.makedirs(save_path)
+            
+            file.save(os.path.join(save_path, filename))
+            
+            new_sponsor = Sponsor(
+                name=name,
+                logo=f"/uploads/sponsors/{filename}",
+                tier=tier
+            )
+            db.session.add(new_sponsor)
+            db.session.commit()
+            
+            return jsonify({'status': 'success', 'sponsor': new_sponsor.to_dict()}), 201
+        return jsonify({'status': 'error', 'message': 'Invalid file type'}), 400
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/sponsors/<int:sponsor_id>', methods=['DELETE'])
+def delete_sponsor(sponsor_id):
+    try:
+        sponsor = Sponsor.query.get(sponsor_id)
+        if not sponsor:
+            return jsonify({'status': 'error', 'message': 'Sponsor not found'}), 404
+        
+        db.session.delete(sponsor)
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Sponsor deleted'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -182,6 +402,69 @@ def get_hero_settings():
             db.session.add(settings)
             db.session.commit()
         return jsonify({'status': 'success', 'settings': settings.to_dict()})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/hero-settings/video', methods=['PUT'])
+def update_hero_video():
+    try:
+        if 'file' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No video sent'}), 400
+        
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"hero_{timestamp}_{filename}"
+            
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], 'hero')
+            if not os.path.exists(save_path): os.makedirs(save_path)
+            
+            file.save(os.path.join(save_path, filename))
+            
+            settings = HeroSettings.query.first()
+            settings.hero_video = f"/uploads/hero/{filename}"
+            db.session.commit()
+            
+            return jsonify({'status': 'success', 'url': settings.hero_video})
+        return jsonify({'status': 'error', 'message': 'Invalid file type'}), 400
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/hero-settings/event-date', methods=['PUT'])
+def update_event_date():
+    try:
+        data = request.get_json()
+        event_date = data.get('eventDate')
+        
+        settings = HeroSettings.query.first()
+        settings.event_date = event_date
+        db.session.commit()
+        
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/event-info', methods=['GET'])
+def get_event_info():
+    try:
+        settings = HeroSettings.query.first()
+        if not settings:
+            return jsonify({'status': 'success', 'eventDate': '2025-08-10T06:00:00'})
+        return jsonify({'status': 'success', 'eventDate': settings.event_date})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    try:
+        # Aquí podrías calcular estadísticas reales
+        stats = {
+            'total_events': Event.query.count(),
+            'total_gallery': GalleryItem.query.count(),
+            'total_sponsors': Sponsor.query.count()
+        }
+        return jsonify({'status': 'success', 'stats': stats})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
