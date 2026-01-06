@@ -210,12 +210,7 @@ export function HeroSection() {
             </Link>
           </motion.div>
 
-          {/* Estadísticas 
-          <motion.div variants={staggerContainer} className="grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto">
-            <StatCard label="Kilómetros" value="21K" color="primary" />
-            <StatCard label="Participantes" value="2000+" color="secondary" />
-            <StatCard label="Ediciones" value="5" color="accent" />
-          </motion.div>*/}
+         
         </div>
       </motion.div>
     </section>
