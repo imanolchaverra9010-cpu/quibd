@@ -77,7 +77,7 @@ const EventosPage = () => {
     <>
       <Helmet>
         <title>Eventos | Media Maratón de Quibdó</title>
-        <meta name="description" content="Descubre todos los eventos y noticias de la Media Maratón de Quibdó." />
+        <meta name="description" content="Descubre todos los eventos y noticias de la Media Maratón de Quibdó. Imanol" />
       </Helmet>
       <div className="min-h-screen bg-background">
         <Header />
