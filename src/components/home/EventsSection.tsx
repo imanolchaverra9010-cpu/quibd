@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight, Clock, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,7 @@ export function EventsSection() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const navigate = useNavigate();
 
   // 3. Efecto para cargar los datos al montar el componente
   useEffect(() => {
@@ -129,7 +131,7 @@ export function EventsSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {events.map((event, index) => (
+          {events.slice(0, 2).map((event, index) => (
             <motion.article
               key={event.id}
               initial={{ opacity: 0, y: 30 }}
@@ -191,7 +193,7 @@ export function EventsSection() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button variant="outline" size="lg">
+          <Button variant="outline" size="lg" onClick={() => navigate("/eventos")}>
             Ver Todos los Eventos
           </Button>
         </motion.div>
