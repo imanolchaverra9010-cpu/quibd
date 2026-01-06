@@ -12,7 +12,7 @@ import { Trash2, Edit, Plus, LogOut, Video, Image, Calendar, Newspaper, Award, X
 import { toast } from "sonner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { eventsAPI, galleryAPI, heroAPI, sponsorsAPI } from "@/services/api";
+import { eventsAPI, galleryAPI, heroAPI, sponsorsAPI, API_BASE_URL } from "@/services/api";
 
 function LoginForm() {
   const [password, setPassword] = useState("");
@@ -719,7 +719,7 @@ export default function Admin() {
 
         <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 mb-6">
           <p className="text-green-600 dark:text-green-400 text-sm">
-            <strong>✅ Conectado al Backend:</strong> Archivos se suben al servidor (localhost:5000/uploads)
+            <strong>✅ Conectado al Backend:</strong> Archivos se suben al servidor ({API_BASE_URL.replace('/api', '')}/uploads)
           </p>
         </div>
 
