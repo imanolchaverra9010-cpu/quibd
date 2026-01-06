@@ -66,6 +66,17 @@ const events: Event[] = [
     image: eventsBg,
   },
 ];
+const renderFormattedText = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 export function EventsSection() {
   // 2. Definimos los estados para los eventos y carga
   const [events, setEvents] = useState<Event[]>([]);
@@ -239,8 +250,8 @@ export function EventsSection() {
                   </span>
                 </div>
               </DialogHeader>
-              <DialogDescription className="text-foreground/80 leading-relaxed text-base">
-                {selectedEvent.content}
+              <DialogDescription className="text-foreground/80 leading-relaxed text-base whitespace-pre-wrap">
+                {renderFormattedText(selectedEvent.content)}
               </DialogDescription>
               <div className="flex gap-3 pt-4">
                 {selectedEvent.category === "evento" && (
