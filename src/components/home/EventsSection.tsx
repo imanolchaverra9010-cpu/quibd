@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import eventsBg from "@/assets/events-bg.jpg";
 import { useEffect } from "react";
+import { eventsAPI } from "@/services/api";
 
 interface Event {
   id: number;
@@ -74,8 +75,7 @@ export function EventsSection() {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/events");
-        const data = await response.json();
+        const data = await eventsAPI.getAll();
         if (data.status === "success") {
           // El backend usa 'description' pero tu interfaz usa 'content' y 'excerpt'
           // Mapeamos los datos para que encajen
