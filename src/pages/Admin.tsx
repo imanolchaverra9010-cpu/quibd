@@ -14,6 +14,19 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { eventsAPI, galleryAPI, heroAPI, sponsorsAPI, API_BASE_URL } from "@/services/api";
 
+const renderFormattedText = (text: string) => {
+  if (!text) return null;
+
+  // Procesar negrillas (**texto**)
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 function LoginForm() {
   const [password, setPassword] = useState("");
   const { login } = useAdmin();
@@ -181,8 +194,17 @@ function EventsManager() {
               </div>
             </div>
             <div>
-              <Label>Descripción</Label>
-              <Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} required />
+              <div className="flex justify-between items-center mb-1">
+                <Label>Descripción</Label>
+                <span className="text-[10px] text-muted-foreground">Usa **texto** para negrita</span>
+              </div>
+              <Textarea
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                required
+                className="min-h-[150px] whitespace-pre-wrap"
+                placeholder="Escribe la descripción aquí... Los saltos de línea y espacios se conservarán."
+              />
             </div>
             <div className="flex items-center gap-2">
               <Switch checked={form.featured} onCheckedChange={v => setForm({ ...form, featured: v })} />
